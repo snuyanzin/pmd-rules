@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="Bulk_rule_set"
+	xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+	<rule name="BulkAPIRule"
+		message="[BulkAPIRule] Use bulk API as much as it is possible for more detailed see"
+		class="ru.nuyanzin.pmd.rules.java.AvoidIterativeInLoops">
+		<description>
+			Use bulk API as much as it is possible
+		</description>
+		
+		<priority>1</priority>
+	</rule>
+	<rule name="AvoidUselessVarargArrayGenerationWhileLogging"
+		  language="java"
+		  message="[AvoidUselessVarargArrayGenerationWhileLogging] Useless array creation. For more detailed please read carefully javadoc for org.slf4j.Logger#debug(java.lang.String, java.lang.Object...). Also it makes sense to read Effective_Java Item 42"
+		  class="net.sourceforge.pmd.lang.rule.XPathRule">
+		<description>
+			AvoidUselessVarargArrayGenerationWhileLogging
+		</description>
+		<properties>
+			<property name="xpath">
+				<value>
+					<![CDATA[
+//PrimaryExpression[PrimaryPrefix[(
+    (ends-with(Name/@Image, '.debug')
+	    and count(ancestor::IfStatement/Expression/descendant::PrimaryExpression[ends-with(descendant::PrimaryPrefix/Name/@Image, 'isDebugEnabled')]) = 0)
+	 or (ends-with(Name/@Image, '.trace')
+	    and count(ancestor::IfStatement/Expression/descendant::PrimaryExpression[ends-with(descendant::PrimaryPrefix/Name/@Image, 'isTraceEnabled')]) = 0))
+		]
+and PrimarySuffix/Arguments/ArgumentList[(count(*) > 3)]]
+]]>
+				</value>
+			</property>
+		</properties>
+		<priority>3</priority>
+		<example>
+			<![CDATA[
+public class Test {
+    private static final Log __log = LogFactory.getLog(Test.class);
+    public void test() {
+        // okay:
+        if (__log.isDebugEnabled()) {
+        __log.debug("log something", 2, 3, 3, 2);
+}
+        // okay:
+        __log.debug("log something with exception", e);
+
+        // bad:
+        __log.debug("log something" + " and " + "concat strings");
+
+        // bad:
+        __log.debug("log something" + " and " + "concat strings", e);
+        if (__log.isTraceEnabled()) {
+        __log.trace("bla" + "",e );
+        }
+       __log.trace("log something" + " and " + "concat strings", e);
+
+        // good:
+        if (__log.isDebugEnabled()) {
+        __log.trace("bla" + "",e );
+        }
+    }
+}
+
+]]>
+		</example>
+	</rule>
+
+
+	<rule name="AvoidStaticFieldsRule"
+		  message="Avoid static JDBCTemplate usage as it is not threadsafe. For more detailed see"
+		  class="ru.nuyanzin.pmd.rules.java.AvoidStaticFields">
+
+		<description>
+			JDBCTemplates class is not thread-safe! It's just a wrapper for java.sql.Connection. Do not put instance of JDBCTemplates into shared environment (static variable, for example), where it can be concurrently used by multiple threads.
+		</description>
+
+		<priority>1</priority>
+
+		<example>
+			<![CDATA[
+	private static JDBCTemplates jdbc =
+  NCCoreInternals.jdbcInstance();
+]]>
+		</example>
+
+	</rule>
+
+	<rule name="AvoidMethodCallsRule"
+		  message="[AvoidMethodCallsRule] Do not use ReferenceResolver when you do not have to. For more detailed see"
+		  class="ru.nuyanzin.pmd.rules.java.AvoidMethodCalls">
+
+		<description>
+		</description>
+
+		<priority>1</priority>
+
+		<example>
+		</example>
+	</rule>
+
+	<rule name="AvoidDebugTraceInCatch"
+		  language="java"
+		  message="[AvoidDebugTraceInCatch] Use reasonable log level in catch blocks"
+		  class="net.sourceforge.pmd.lang.rule.XPathRule">
+		<description>
+			AvoidDebugTraceInCatch
+		</description>
+		<priority>1</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+					<![CDATA[//CatchStatement//PrimaryPrefix[(ends-with(Name/@Image, '.debug') or ends-with(Name/@Image, '.trace'))]
+]]>
+				</value>
+			</property>
+		</properties>
+
+		<example>
+			<![CDATA[
+public class Foo {
+ public void bar(int status) {
+try
+{
+  dowhateverStuff();
+}
+catch(Exception e)
+{
+  log.debug("qer");
+}
+ }
+}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidEmptyOrLoglessCatches"
+		  language="java"
+		  message="[AvoidEmptyOrLoglessCatches] Please do logs in catch blocks and other stuff"
+		  class="net.sourceforge.pmd.lang.rule.XPathRule">
+		<description>
+			AvoidEmptyOrLoglessCatches
+		</description>
+		<priority>3</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+					<![CDATA[//CatchStatement
+ [(count(Block/BlockStatement) = 0)]
+]]>
+				</value>
+			</property>
+		</properties>
+
+		<example>
+			<![CDATA[
+public class Foo {
+ public void bar(int status) {
+
+try
+{
+int i = 0;
+}
+catch(Exception e)
+{
+log.fa2tal();
+}
+}}
+]]>
+		</example>
+	</rule>
+
+	<rule name="AvoidConcatenationForStringBuilderBuffer"
+		  language="java"
+		  message="[AvoidConcatenationForStringBuilderBuffer] Use append methods for string concatenations"
+		  class="net.sourceforge.pmd.lang.rule.XPathRule">
+		<description>AvoidConcatenationForStringBuilderBuffer
+		</description>
+		<priority>3</priority>
+		<properties>
+			<property name="xpath">
+				<value>
+					<![CDATA[//PrimaryPrefix[ends-with(Name/@Image, '.append') and count(../descendant::AdditiveExpression) > 0]
+]]>
+				</value>
+			</property>
+		</properties>
+
+		<example>
+			<![CDATA[
+public class Foo {
+ public void bar(int status) {
+String s = "";
+StringBuffer  sb = new StringBuffer();
+sb.append(s);
+sb.append("qwe" + "2");
+ }
+}]]>
+		</example>
+	</rule>
+	<rule name="AvoidWrongSLF4JSignatureUsage"
+		  language="java"
+		  message="[AvoidWrongSLF4JSignatureUsage] Wrong way to pass an exception please use one more argument for exception however without curly braces"
+		  class="ru.nuyanzin.pmd.rules.java.AvoidWrongSLF4JSignatureUsage">
+
+		<description>
+			Use right signature of slf4j logger
+		</description>
+
+		<priority>1</priority>
+
+		<example>
+			<![CDATA[
+	public class Foo {
+ public void bar(int status) {
+try
+{
+}
+catch(Exception e)
+{
+   log.error("qweq {}", e);//wrong
+   log.error("qweq", e);//good
+}
+}
+}
+]]>
+		</example>
+	</rule>
+</ruleset>

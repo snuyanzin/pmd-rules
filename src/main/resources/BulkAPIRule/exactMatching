@@ -1,0 +1,15 @@
+LightLoadingService.INSTANCE.findByID
+LightLoadingService.LIGHT.findByID
+LightLoadingService.BEANS.findByID
+BEANS.findByID
+LIGHT.findByID
+findByID
+NCMetaDataTools.getAttribute
+getAttribute
+NCDataObjectManager.findObjectByID
+findObjectByID
+NCCoreInternals.jdbcInstance().executeSelect
+PCFacade.getInstance().getCurrentContext().getObjectByID
+getInstance().getCurrentContext().getObjectByID
+getCurrentContext().getObjectByID
+CBMUtils.getInstance().getObjectById

@@ -1,0 +1,17 @@
+.findBPrimaryKey
+.findBySQL
+.findByID
+.executeSelect
+.selectForObject
+.executeUpdate
+.functionCall
+.procedureCall
+.executeBatch
+.selectForObjectOrNull
+.selectForList
+.execute
+.getOrderItemById
+.createAdapter
+.createLightAdapter
+.resetCommonFieldsByBpi
+.getById
